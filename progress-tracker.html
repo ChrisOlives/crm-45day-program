@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>45-Day CRM Career Shift — Progress Tracker</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --surface: #ffffff;
+    --surface2: #f0f2f5;
+    --border: #e2e6ea;
+    --text: #1a202c;
+    --text2: #4a5568;
+    --text3: #718096;
+    --accent: #4f46e5;
+    --accent-light: #eef2ff;
+    --accent2: #7c3aed;
+    --green: #059669;
+    --green-light: #ecfdf5;
+    --amber: #d97706;
+    --amber-light: #fffbeb;
+    --red: #dc2626;
+    --red-light: #fef2f2;
+    --phase1: #0ea5e9;
+    --phase2: #8b5cf6;
+    --phase3: #f59e0b;
+    --phase4: #10b981;
+    --phase5: #f43f5e;
+    --phase6: #6366f1;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  [data-theme="dark"] {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #252836;
+    --border: #2d3148;
+    --text: #e2e8f0;
+    --text2: #a0aec0;
+    --text3: #718096;
+    --accent-light: #1e1b4b;
+    --green-light: #064e3b;
+    --amber-light: #451a03;
+    --red-light: #450a0a;
+    --shadow: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 0.2s, color 0.2s;
+  }
+  .header {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    padding: 24px 20px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(79,70,229,0.4);
+  }
+  .header-inner { max-width: 860px; margin: 0 auto; }
+  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .header h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
+  .header p { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
+  .dark-toggle {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .dark-toggle:hover { background: rgba(255,255,255,0.25); }
+  .progress-section { margin-top: 4px; }
+  .progress-meta { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .progress-label { font-size: 0.8rem; opacity: 0.9; }
+  .progress-pct { font-size: 1.5rem; font-weight: 800; }
+  .progress-track {
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    height: 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    background: linear-gradient(90deg, #a5f3fc, #ffffff);
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    min-width: 2px;
+  }
+  .progress-stats { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
+  .stat { font-size: 0.75rem; opacity: 0.85; }
+  .stat strong { font-weight: 700; }
+  .main { max-width: 860px; margin: 0 auto; padding: 20px 16px 60px; }
+  .phase {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .phase-header {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    gap: 12px;
+    transition: background 0.15s;
+  }
+  .phase-header:hover { background: var(--surface2); }
+  .phase-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .phase-title { font-weight: 700; font-size: 0.95rem; flex: 1; }
+  .phase-sub { font-size: 0.75rem; color: var(--text2); }
+  .phase-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .phase-chevron {
+    color: var(--text3);
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .phase.open .phase-chevron { transform: rotate(180deg); }
+  .phase-body { display: none; border-top: 1px solid var(--border); }
+  .phase.open .phase-body { display: block; }
+  .phase-progress {
+    height: 3px;
+    background: var(--border);
+    margin: 0 16px 0;
+  }
+  .phase-progress-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
+  .day-list { padding: 4px 0 8px; }
+  .day-item {
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    align-items: start;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .day-item:last-child { border-bottom: none; }
+  .day-item:hover { background: var(--surface2); }
+  .day-item.completed { opacity: 0.7; }
+  .day-num {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: var(--text3);
+    padding-top: 2px;
+    text-align: center;
+  }
+  .day-content { min-width: 0; }
+  .day-title {
+    font-weight: 600;
+    font-size: 0.88rem;
+    line-height: 1.3;
+    margin-bottom: 3px;
+  }
+  .day-item.completed .day-title { text-decoration: line-through; color: var(--text3); }
+  .day-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .tag {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.01em;
+  }
+  .tag-company { background: var(--accent-light); color: var(--accent); }
+  .tag-time { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
+  .tag-cert { background: var(--amber-light); color: var(--amber); }
+  .day-check {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.15s, background 0.15s;
+    margin-top: 1px;
+  }
+  .day-check:hover { border-color: var(--accent); }
+  .day-check.checked {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+  .day-check.checked::after { content: '✓'; font-size: 13px; font-weight: 800; }
+  .day-tasks-toggle {
+    font-size: 0.7rem;
+    color: var(--accent);
+    cursor: pointer;
+    margin-top: 5px;
+    display: inline-block;
+    font-weight: 600;
+    user-select: none;
+  }
+  .day-tasks { display: none; margin-top: 6px; }
+  .day-tasks.open { display: block; }
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    padding: 4px 0;
+    font-size: 0.78rem;
+    color: var(--text2);
+    line-height: 1.4;
+  }
+  .task-cb {
+    width: 15px; height: 15px;
+    border: 2px solid var(--border);
+    border-radius: 3px;
+    flex-shrink: 0;
+    cursor: pointer;
+    margin-top: 1px;
+    background: var(--surface);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .task-cb:hover { border-color: var(--accent); }
+  .task-cb.checked { background: var(--green); border-color: var(--green); }
+  .task-cb.checked::after { content: '✓'; display: block; color: white; font-size: 9px; font-weight: 900; text-align: center; line-height: 13px; }
+  .task-text.done { text-decoration: line-through; color: var(--text3); }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .summary-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .summary-card .val { font-size: 1.6rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+  .summary-card .lbl { font-size: 0.72rem; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .cert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; padding: 12px 16px 14px; }
+  .cert-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .cert-item:hover { border-color: var(--accent); }
+  .cert-item.earned { background: var(--green-light); border-color: var(--green); }
+  .cert-icon { font-size: 1rem; flex-shrink: 0; }
+  .reset-btn {
+    display: block;
+    margin: 20px auto 0;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    border-radius: var(--radius-sm);
+    padding: 8px 18px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .reset-btn:hover { border-color: var(--red); color: var(--red); }
+  @media (max-width: 540px) {
+    .header h1 { font-size: 1rem; }
+    .progress-pct { font-size: 1.2rem; }
+    .day-item { grid-template-columns: 32px 1fr auto; gap: 8px; padding: 10px 12px; }
+    .summary-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div>
+        <h1>45-Day CRM Career Shift</h1>
+        <p>HubSpot · n8n · RevOps · AI Automation</p>
+      </div>
+      <button class="dark-toggle" onclick="toggleDark()" id="darkBtn">🌙 Dark</button>
+    </div>
+    <div class="progress-section">
+      <div class="progress-meta">
+        <span class="progress-label" id="progressLabel">0 of 45 days complete</span>
+        <span class="progress-pct" id="progressPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <div class="progress-stats">
+        <span class="stat">Days done: <strong id="statDone">0</strong></span>
+        <span class="stat">Remaining: <strong id="statLeft">45</strong></span>
+        <span class="stat">Tasks done: <strong id="statTasks">0</strong></span>
+        <span class="stat">Certs earned: <strong id="statCerts">0</strong>/6</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="val" id="sc-days" style="color:var(--accent)">0</div>
+      <div class="lbl">Days Done</div>
+    </div>
+    <div class="summary-card">
+      <div class="val" id="sc-hs" style="color:var(--phase1)">0</div>
+      <div class="lbl">HubSpot Days</div>
+    </div>
+    <div class="summary-card">
+      <div class="val" id="sc-n8n" style="color:var(--phase5)">0</div>
+      <div class="lbl">n8n Days</div>
+    </div>
+    <div class="summary-card">
+      <div class="val" id="sc-tasks" style="color:var(--green)">0</div>
+      <div class="lbl">Tasks Done</div>
+    </div>
+    <div class="summary-card">
+      <div class="val" id="sc-certs" style="color:var(--amber)">0</div>
+      <div class="lbl">Certifications</div>
+    </div>
+    <div class="summary-card">
+      <div class="val" id="sc-pct" style="color:var(--phase6)">0%</div>
+      <div class="lbl">Complete</div>
+    </div>
+  </div>
+
+  <div class="phase" id="phase-certs">
+    <div class="phase-header" onclick="togglePhase('phase-certs')">
+      <div class="phase-dot" style="background:var(--amber)"></div>
+      <div style="flex:1">
+        <div class="phase-title">🏆 HubSpot Certifications</div>
+        <div class="phase-sub">Earn all 6 — add each to LinkedIn immediately</div>
+      </div>
+      <div class="phase-chevron">▼</div>
+    </div>
+    <div class="phase-body">
+      <div class="cert-grid" id="certGrid"></div>
+    </div>
+  </div>
+
+  <div id="phaseContainer"></div>
+
+  <button class="reset-btn" onclick="confirmReset()">↺ Reset All Progress</button>
+
+</div>
+
+<script>
+const CERTS = [
+  { id:'cert1', label:'HubSpot CRM Certification', day:7, icon:'🎓' },
+  { id:'cert2', label:'Marketing Software Certification', day:14, icon:'📣' },
+  { id:'cert3', label:'Sales Software Certification', day:21, icon:'💼' },
+  { id:'cert4', label:'Service Hub Certification', day:28, icon:'🎧' },
+  { id:'cert5', label:'Revenue Operations Certification', day:24, icon:'▪' },
+  { id:'cert6', label:'Reporting Certification', day:30, icon:'📈' },
+];
+
+const PHASES = [
+  {
+    id:'p1', color:'var(--phase1)',
+    title:'Phase 1 — HubSpot Foundations',
+    sub:'BrightClean Services · Days 1–8',
+    days:[
+      { d:1, title:'Account Setup & Company Configuration', company:'BrightClean', time:'2h',
+        tasks:['Create HubSpot free account','Complete onboarding wizard','Remove demo data','Set company name, logo, timezone','Create 3 users + 2 teams'] },
+      { d:2, title:'Custom Property Schema Design', company:'BrightClean', time:'2h',
+        tasks:['Create "BrightClean Service Info" property group','Build 10 contact custom properties','Build 6 deal custom properties','Export property list as CSV'] },
+      { d:3, title:'Sales Pipeline + Deal Stages', company:'BrightClean', time:'2.5h',
+        tasks:['Delete default pipeline stages','Build 8-stage BrightClean pipeline','Set probabilities on each stage','Set required properties per stage transition','Create 8 sample deals across stages'] },
+      { d:4, title:'Contact Import + Data Migration', company:'BrightClean', time:'2.5h',
+        tasks:['Build 40-contact CSV in Google Sheets','Import with custom field mapping','Create 10 company records','Associate contacts with companies'] },
+      { d:5, title:'Lifecycle Stages + Segmentation Lists', company:'BrightClean', time:'2.5h',
+        tasks:['Assign lifecycle stages to all 40 contacts','Set lead status on 7 lead contacts','Build 6 active lists','Build 2 static lists'] },
+      { d:6, title:'Core Automation Workflows (3)', company:'BrightClean', time:'3h',
+        tasks:['Build Workflow 1: New Lead Notification','Build Workflow 2: Post-Service Review Request','Build Workflow 3: Recurring Client Reminder','Test each workflow + verify execution logs'] },
+      { d:7, title:'Dashboards + HubSpot CRM Certification', company:'BrightClean', time:'3h', cert:true,
+        tasks:['Build BrightClean Operations Dashboard (8 reports)','Build Sales Activity Dashboard (3 reports)','Record Loom walkthrough video (5–7 min)','Complete HubSpot CRM Certification exam'] },
+      { d:8, title:'Full Documentation Package', company:'BrightClean', time:'2.5h',
+        tasks:['Write Data Dictionary (Google Sheets)','Write Pipeline SOP (Google Docs)','Write Workflow Documentation','Write Admin Setup Checklist','Export all as PDFs'] },
+    ]
+  },
+  {
+    id:'p2', color:'var(--phase2)',
+    title:'Phase 2 — Marketing Hub',
+    sub:'NovaNest Realty · Days 9–15',
+    days:[
+      { d:9, title:'Landing Pages, Forms & Lead Capture', company:'NovaNest', time:'3h',
+        tasks:['Create 6 NovaNest custom properties','Build Buyer Consultation Request form','Build Home Valuation Request form','Build Open House Sign-In form','Create "Get Your Free Home Valuation" landing page'] },
+      { d:10, title:'5-Email Buyer Nurture Sequence', company:'NovaNest', time:'3.5h',
+        tasks:['Write & build all 5 nurture emails in HubSpot','Set up enrollment workflow with correct delays','Test enrollment with a contact','Verify Email 1 sends immediately'] },
+      { d:11, title:'Lead Scoring Model + MQL Alert Workflow', company:'NovaNest', time:'3h',
+        tasks:['Build HubSpot Score with 8 positive attributes','Add 3 negative score attributes','Set MQL threshold = 40 points','Build MQL Alert workflow with SLA escalation','Create Lead Scoring Model PDF document'] },
+      { d:12, title:'Advanced Segmentation + Seller Nurture', company:'NovaNest', time:'3h',
+        tasks:['Build 10 active segmentation lists','Write & build 3 seller nurture emails','Build Seller Nurture workflow','Test AND/OR logic on at least 3 lists'] },
+      { d:13, title:'Deal Pipelines + Deal Automation', company:'NovaNest', time:'3h',
+        tasks:['Build NovaNest Buyer Pipeline (7 stages)','Build NovaNest Seller Pipeline (7 stages)','Build Workflow A: New Inquiry → Deal Creation','Build Workflow B: Consultation Scheduled Checklist','Build Workflow C: Under Contract Closing Checklist','Create 10 sample deals'] },
+      { d:14, title:'Reporting Dashboards + Marketing Certification', company:'NovaNest', time:'3h', cert:true,
+        tasks:['Build Lead Intelligence Dashboard (6 reports)','Build Pipeline Performance Dashboard (6 reports)','Record Loom walkthrough (5 min)','Complete HubSpot Marketing Software Certification'] },
+      { d:15, title:'System Documentation + Client Handoff', company:'NovaNest', time:'3h',
+        tasks:['Write CRM System Overview (9 sections)','Write Agent Training Guide','Complete CRM Health Audit checklist','Record Loom: NovaNest CRM Walkthrough (8 min)','Export all 3 docs as PDFs'] },
+    ]
+  },
+  {
+    id:'p3', color:'var(--phase3)',
+    title:'Phase 3 — Sales Hub + RevOps',
+    sub:'Stackr SaaS · Days 16–24',
+    days:[
+      { d:16, title:'SaaS Lifecycle Architecture + Lead Routing', company:'Stackr SaaS', time:'3h',
+        tasks:['Create 16 Stackr custom properties','Write Lifecycle Architecture document','Build MQL→SQL workflow with 4-hour SLA escalation','Create 30 fake Stackr contacts'] },
+      { d:17, title:'SaaS Sales Pipelines + Deal Automation', company:'Stackr SaaS', time:'3h',
+        tasks:['Build New Business Pipeline (8 stages)','Build Expansion Pipeline (6 stages)','Build Workflow 1: Demo Request → Auto Assignment','Build Workflow 2: Demo Completed Follow-Up','Build Workflow 3: Stalled Deal Alert','Build Workflow 4: Closed Lost Analysis','Create 15 sample deals'] },
+      { d:18, title:'Sales Sequences + Outbound Cadences', company:'Stackr SaaS', time:'3h',
+        tasks:['Build Sequence 1: Free-to-Pro Conversion (5 steps)','Build Sequence 2: Cold Free User Re-engagement (3 steps)','Build Sequence 3: Post-Demo Follow-Up (5 steps)','Write all email copy with personalization tokens','Write Sequences Playbook PDF'] },
+      { d:19, title:'Customer Onboarding + Churn Prevention', company:'Stackr SaaS', time:'3.5h',
+        tasks:['Write & build 5 onboarding emails','Build Onboarding Workflow with correct delays','Build Churn Prevention workflow with escalation','Build Re-engagement workflow for low-usage users','Create Customer Journey Map in Canva'] },
+      { d:20, title:'Two-Dimensional Lead Scoring Model', company:'Stackr SaaS', time:'3h',
+        tasks:['Define ICP and build Fit Score attributes','Build Engagement Score attributes','Set MQL thresholds (regular + hot)','Build routing workflow (Hot vs. Standard)','Create 3 tiered segmentation lists','Write Stackr ICP + Scoring Model PDF'] },
+      { d:21, title:'Sales Performance Dashboards + Sales Certification', company:'Stackr SaaS', time:'3.5h', cert:true,
+        tasks:['Build Revenue Forecast Dashboard (6 reports)','Build Sales Coaching Dashboard (6 reports)','Build Weekly Sales Briefing report','Record Loom: Sales Dashboard Presentation (6 min)','Complete HubSpot Sales Software Certification'] },
+      { d:22, title:'Data Cleanup + Governance System', company:'Stackr SaaS', time:'3h',
+        tasks:['Build Data Audit spreadsheet (3 tabs)','Find and merge duplicate contacts','Fix all contacts with missing lifecycle stages','Build 3 Data Governance workflows','Write Data Governance SOP v1.0'] },
+      { d:23, title:'CRM Migration Simulation', company:'Stackr SaaS', time:'3.5h',
+        tasks:['Build Pipedrive export simulation (50 rows)','Create Migration Field Mapping document','Clean the raw data (standardize, remove duplicates)','Import companies → contacts → deals in correct order','Run post-import audit and document results'] },
+      { d:24, title:'RevOps Optimization Report + RevOps Certification', company:'Stackr SaaS', time:'3.5h', cert:true,
+        tasks:['Build RevOps Command Center Dashboard (8 reports)','Write Q1 RevOps Optimization Report (7 sections)','Complete HubSpot Revenue Operations Certification','Format report with cover page and export as PDF'] },
+    ]
+  },
+  {
+    id:'p4', color:'var(--phase4)',
+    title:'Phase 4 — Service Hub + Operations',
+    sub:'PulseCart · Days 25–30',
+    days:[
+      { d:25, title:'Service Hub — Ticketing System', company:'PulseCart', time:'3h',
+        tasks:['Create 9 PulseCart contact custom properties','Build Support Ticketing Pipeline (6 stages)','Create 4 custom ticket properties','Build Workflow 1: New Ticket Auto-Acknowledgment','Build Workflow 2: Awaiting Reply Auto-Close','Build Workflow 3: Resolved → NPS Survey','Create 20 sample support tickets'] },
+      { d:26, title:'E-Commerce Segmentation + Campaigns', company:'PulseCart', time:'3h',
+        tasks:['Import 40 PulseCart customers with RFM data','Build 8 active segmentation lists','Create VIP Exclusive Early Access email','Build 3-email Win-Back Campaign sequence','Create One-Time Buyer Re-Order email','Build workflows for each campaign'] },
+      { d:27, title:'Operations Hub — Calculated Properties + Data Integrity', company:'PulseCart', time:'3h',
+        tasks:['Build "Days Since Last Order" calculated property','Build "Average Order Value" calculated property','Configure Customer Health Score (HubSpot Score)','Build Customer Tier Auto-Assignment workflow','Build Abandoned Cart workflow','Build Post-Purchase Tier Upgrade Alert'] },
+      { d:28, title:'Service Hub Reporting + Service Certification', company:'PulseCart', time:'3h', cert:true,
+        tasks:['Build PulseCart Service Dashboard (10 reports)','Build Retention Health Report','Ensure 8 tickets are in Resolved/Closed stage','Record Loom: Support Dashboard Walkthrough (4 min)','Complete HubSpot Service Hub Certification'] },
+      { d:29, title:'Marketing Attribution Reports', company:'PulseCart', time:'3h',
+        tasks:['Build First Touch Attribution report','Build Last Touch Attribution report','Build Linear Attribution report','Build Marketing ROI Dashboard (6 reports)','Write Attribution Analysis document with recommendations'] },
+      { d:30, title:'Final Documentation + Reporting Certification', company:'PulseCart', time:'3h', cert:true,
+        tasks:['Run full CRM Health Audit','Write PulseCart System Overview (9 sections)','Write PulseCart Admin Playbook','Write 90-Day Roadmap document','Create PulseCart 1-Pager in Canva','Record Loom: Full PulseCart System Tour (8 min)','Complete HubSpot Reporting Certification'] },
+    ]
+  },
+  {
+    id:'p5', color:'var(--phase5)',
+    title:'Phase 5 — n8n Automation Engineering',
+    sub:'GrowthBridge Agency · Days 31–40',
+    days:[
+      { d:31, title:'n8n Setup + 3 Foundation Workflows', company:'GrowthBridge', time:'3h',
+        tasks:['Install n8n (cloud or desktop)','Build Workflow 1: HTTP Request + data extraction','Build Workflow 2: Webhook → Google Sheets Logger','Build Workflow 3: Scheduled Daily Summary Email','Export all 3 workflows as JSON'] },
+      { d:32, title:'Lead Intake Automation (7-Node, Multi-App)', company:'GrowthBridge', time:'3.5h',
+        tasks:['Set up HubSpot Private App in n8n credentials','Build Webhook trigger with IF branch (new vs. existing contact)','Add HubSpot Create Contact node','Add HubSpot Create Deal node','Add Slack notification node','Add Google Sheets logging node','Add Gmail auto-reply node','Test both new + duplicate contact paths','Create Automation Map in Canva'] },
+      { d:33, title:'Automated Monthly Client Report Generator', company:'GrowthBridge', time:'3.5h',
+        tasks:['Build Google Sheet with 30 rows (3 months × 10 clients)','Build Schedule trigger workflow','Write Code node to group data by client','Build Loop Over Items node','Write Code node to format HTML email report','Test with manual trigger for all 10 clients','Verify 10 emails sent + 10 log rows created'] },
+      { d:34, title:'AI Lead Qualification Agent (OpenAI)', company:'GrowthBridge', time:'4h',
+        tasks:['Set up OpenAI credentials in n8n','Build Webhook trigger','Build OpenAI qualification node with JSON output prompt','Write Code node to parse AI JSON response','Build IF routing node (Hot/Warm vs. Cold vs. Disqualified)','Test with 3 different lead profiles','Create AI Qualification System explainer in Canva'] },
+      { d:35, title:'Deal Stage Change Automations (HubSpot + n8n)', company:'GrowthBridge', time:'4h',
+        tasks:['Build HubSpot workflow to send webhook on Closed Won','Build n8n Workflow 1: Closed Won → 7-node parallel onboarding','Verify Slack + Gmail + Sheets + HubSpot tasks all fire','Build n8n Workflow 2: Closed Lost → AI loss analysis','Test both workflows with sample deals'] },
+      { d:36, title:'AI Support Triage + 5-Path Routing', company:'GrowthBridge', time:'4h',
+        tasks:['Build OpenAI triage node with category/priority JSON output','Build Switch node with 5 routing branches','Build HubSpot ticket creation node','Build Slack notification for each branch','Build Gmail auto-acknowledgment','Test with 5 different support request types'] },
+      { d:37, title:'Lead Data Enrichment Pipeline', company:'GrowthBridge', time:'4h',
+        tasks:['Build Google Sheet with 20 unenriched leads','Write Code node to extract email domain','Build HTTP Request node to Clearbit/Abstract API','Build Loop Over Items for batch processing','Build IF node for success/failure handling','Build HubSpot contact update node','Verify Google Sheets enrichment status updated'] },
+      { d:38, title:'Client Onboarding — 4 Parallel Branches', company:'GrowthBridge', time:'4h',
+        tasks:['Build Webhook trigger for contract signed event','Build Branch A: Gmail welcome email','Build Branch B: HubSpot deal + 8 tasks','Build Branch C: Slack announcement','Build Branch D: Google Sheets roster update','Build Merge node to rejoin all branches','Test with 3 different service types','Create Onboarding Flow Diagram in Canva'] },
+      { d:39, title:'AI Campaign Assistant + Weekly Content Ideas', company:'GrowthBridge', time:'3.5h',
+        tasks:['Build Webhook trigger for campaign briefs','Build OpenAI subject line generator (5 variants, JSON output)','Build OpenAI email body reviewer','Write Code node to format Slack Block Kit message','Build Slack post to #campaign-reviews','Build Gmail notification to account manager','Build second workflow: Weekly Content Ideas (scheduled)','Test with 3 different campaign briefs'] },
+      { d:40, title:'n8n Documentation Package + System Architecture', company:'GrowthBridge', time:'3.5h',
+        tasks:['Rename all 10 workflows with consistent naming convention','Export all 10 workflows as JSON files','Build Architecture Diagram in Canva (all 10 workflows mapped)','Build Workflow Inventory spreadsheet','Write n8n Admin Runbook (6 sections)','Write 1-page doc for each of 10 workflows','Record Loom: n8n System Walkthrough (10 min)'] },
+    ]
+  },
+  {
+    id:'p6', color:'var(--phase6)',
+    title:'Phase 6 — Capstone Project',
+    sub:'GrowthBridge Agency — Full System Build · Days 41–45',
+    days:[
+      { d:41, title:'System Architecture + HubSpot Master Config', company:'GrowthBridge', time:'4h',
+        tasks:['Write Architecture Document (10 sections)','Create Integration Map diagram in Canva','Confirm all HubSpot users + teams','Build/confirm all 15 custom properties','Confirm all 4 pipelines exist','Confirm all 6 active lists exist and populating'] },
+      { d:42, title:'8 Production HubSpot Workflows', company:'GrowthBridge', time:'5h',
+        tasks:['Build/refine Workflow 1: New Lead Intake & Routing','Build/refine Workflow 2: MQL Alert + SLA Escalation','Build/refine Workflow 3: Deal Created Checklist','Build/refine Workflow 4: 5-Email Lead Nurture','Build/refine Workflow 5: Closed Won → Client Onboarding','Build/refine Workflow 6: Client Health Monitoring','Build/refine Workflow 7: Renewal Alerts (60/30/7 days)','Build/refine Workflow 8: Upsell Trigger','Test all 8 + build Workflow Testing Log spreadsheet'] },
+      { d:43, title:'5 Production n8n Workflows + Integration Test', company:'GrowthBridge', time:'5h',
+        tasks:['Build/refine n8n Workflow 1: Master Lead Intake (12 nodes)','Build/refine n8n Workflow 2: Closed Won Revenue Event (parallel branches)','Build/refine n8n Workflow 3: Monthly Revenue Report Generator','Build n8n Workflow 4: Weekly Client Health Monitor','Build n8n Workflow 5: Weekly AI Leadership Briefing','Run full end-to-end integration test (6 touchpoints)','Build End-to-End System Test Log spreadsheet'] },
+      { d:44, title:'Executive Reporting Suite + Analytics Report', company:'GrowthBridge', time:'5h',
+        tasks:['Build Revenue Command Center Dashboard (10 reports)','Build Marketing Intelligence Dashboard (10 reports)','Build Client Health & Retention Dashboard (10 reports)','Write Q1 RevOps Analysis Report (8 sections + cover page)','Record Loom: Executive Dashboard Presentation (10 min)'] },
+      { d:45, title:'Final Documentation + Portfolio Packaging', company:'GrowthBridge', time:'5h',
+        tasks:['Write Client Handoff Package (12 sections)','Run + document full CRM Health Audit','Run + document n8n Health Audit','Organize complete portfolio folder structure','Build 10-slide Capstone Showcase Deck in Canva','Record Loom: Full System Walkthrough (15 min)','Create Portfolio Index PDF (list of all artifacts)'] },
+    ]
+  },
+];
+
+let state = {
+  dark: false,
+  days: {},
+  tasks: {},
+  certs: {},
+  openPhases: { 'phase-certs': false },
+  openDayTasks: {},
+};
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('crm45_v2');
+    if (saved) { state = { ...state, ...JSON.parse(saved) }; }
+  } catch(e) {}
+}
+
+function saveState() {
+  try { localStorage.setItem('crm45_v2', JSON.stringify(state)); } catch(e) {}
+}
+
+function renderCerts() {
+  const grid = document.getElementById('certGrid');
+  grid.innerHTML = CERTS.map(c => {
+    const earned = !!state.certs[c.id];
+    return `<div class="cert-item ${earned?'earned':''}" id="ci-${c.id}" onclick="toggleCert('${c.id}')">
+      <span class="cert-icon">${earned ? '✓' : c.icon}</span>
+      <span>${c.label}<br><span style="font-size:0.67rem;font-weight:400;color:var(--text3)">Target: Day ${c.day}</span></span>
+    </div>`;
+  }).join('');
+}
+
+function renderPhases() {
+  const container = document.getElementById('phaseContainer');
+  container.innerHTML = PHASES.map(phase => {
+    const phaseDays = phase.days.map(d => d.d);
+    const doneCount = phaseDays.filter(d => !!state.days[d]).length;
+    const total = phaseDays.length;
+    const pct = total ? Math.round(doneCount / total * 100) : 0;
+    const isOpen = !!state.openPhases[phase.id];
+
+    const daysHtml = phase.days.map(day => {
+      const done = !!state.days[day.d];
+      const tasksOpen = !!state.openDayTasks[day.d];
+      const tasksDoneCount = day.tasks.filter((_,i) => !!state.tasks[`${day.d}-${i}`]).length;
+
+      const tagsHtml = [
+        `<span class="tag tag-company">${day.company}</span>`,
+        `<span class="tag tag-time">⏱ ${day.time}</span>`,
+        day.cert ? `<span class="tag tag-cert">🏆 Certification</span>` : '',
+        tasksDoneCount > 0 ? `<span class="tag tag-time">${tasksDoneCount}/${day.tasks.length} tasks</span>` : ''
+      ].filter(Boolean).join('');
+
+      const tasksHtml = day.tasks.map((t, i) => {
+        const tDone = !!state.tasks[`${day.d}-${i}`];
+        return `<div class="task-item">
+          <div class="task-cb ${tDone?'checked':''}" onclick="toggleTask(${day.d},${i},event)" id="tcb-${day.d}-${i}"></div>
+          <span class="task-text ${tDone?'done':''}" id="tt-${day.d}-${i}">${t}</span>
+        </div>`;
+      }).join('');
+
+      return `<div class="day-item ${done?'completed':''}" id="day-item-${day.d}">
+        <div class="day-num">Day<br>${day.d}</div>
+        <div class="day-content">
+          <div class="day-title" id="dt-${day.d}">${day.title}</div>
+          <div class="day-meta">${tagsHtml}</div>
+          <span class="day-tasks-toggle" onclick="toggleDayTasks(${day.d},event)">${tasksOpen ? '▾ Hide tasks' : '▸ Show tasks'}</span>
+          <div class="day-tasks ${tasksOpen?'open':''}" id="dtasks-${day.d}">${tasksHtml}</div>
+        </div>
+        <div class="day-check ${done?'checked':''}" id="cb-${day.d}" onclick="toggleDay(${day.d})"></div>
+      </div>`;
+    }).join('');
+
+    return `<div class="phase ${isOpen?'open':''}" id="${phase.id}">
+      <div class="phase-header" onclick="togglePhase('${phase.id}')">
+        <div class="phase-dot" style="background:${phase.color}"></div>
+        <div style="flex:1">
+          <div class="phase-title">${phase.title}</div>
+          <div class="phase-sub">${phase.sub}</div>
+        </div>
+        <div class="phase-badge" style="background:${phase.color}22;color:${phase.color}">
+          ${doneCount}/${total}
+        </div>
+        <div class="phase-chevron">▼</div>
+      </div>
+      <div class="phase-body">
+        <div style="padding:0 16px 6px">
+          <div class="phase-progress">
+            <div class="phase-progress-fill" style="width:${pct}%;background:${phase.color}"></div>
+          </div>
+        </div>
+        <div class="day-list">${daysHtml}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateStats() {
+  const doneDays = Object.values(state.days).filter(Boolean).length;
+  const doneTasks = Object.values(state.tasks).filter(Boolean).length;
+  const doneCerts = Object.values(state.certs).filter(Boolean).length;
+  const hsDays = PHASES.slice(0,4).flatMap(p=>p.days).filter(d=>!!state.days[d.d]).length;
+  const n8nDays = PHASES[4].days.filter(d=>!!state.days[d.d]).length;
+  const pct = Math.round(doneDays / 45 * 100);
+
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressLabel').textContent = `${doneDays} of 45 days complete`;
+  document.getElementById('statDone').textContent = doneDays;
+  document.getElementById('statLeft').textContent = 45 - doneDays;
+  document.getElementById('statTasks').textContent = doneTasks;
+  document.getElementById('statCerts').textContent = doneCerts;
+  document.getElementById('sc-days').textContent = doneDays;
+  document.getElementById('sc-hs').textContent = hsDays;
+  document.getElementById('sc-n8n').textContent = n8nDays;
+  document.getElementById('sc-tasks').textContent = doneTasks;
+  document.getElementById('sc-certs').textContent = doneCerts;
+  document.getElementById('sc-pct').textContent = pct + '%';
+}
+
+function toggleDay(dayNum) {
+  state.days[dayNum] = !state.days[dayNum];
+  saveState();
+  const item = document.getElementById(`day-item-${dayNum}`);
+  const cb = document.getElementById(`cb-${dayNum}`);
+  if (item) item.classList.toggle('completed', !!state.days[dayNum]);
+  if (cb) cb.classList.toggle('checked', !!state.days[dayNum]);
+  rerenderPhaseBadge(dayNum);
+  updateStats();
+}
+
+function toggleTask(dayNum, idx, e) {
+  e.stopPropagation();
+  const key = `${dayNum}-${idx}`;
+  state.tasks[key] = !state.tasks[key];
+  saveState();
+  const cb = document.getElementById(`tcb-${dayNum}-${idx}`);
+  const txt = document.getElementById(`tt-${dayNum}-${idx}`);
+  if (cb) cb.classList.toggle('checked', !!state.tasks[key]);
+  if (txt) txt.classList.toggle('done', !!state.tasks[key]);
+  rerenderDayMeta(dayNum);
+  updateStats();
+}
+
+function toggleCert(certId) {
+  state.certs[certId] = !state.certs[certId];
+  saveState();
+  renderCerts();
+  updateStats();
+}
+
+function togglePhase(phaseId) {
+  state.openPhases[phaseId] = !state.openPhases[phaseId];
+  saveState();
+  const el = document.getElementById(phaseId);
+  if (el) el.classList.toggle('open', !!state.openPhases[phaseId]);
+}
+
+function toggleDayTasks(dayNum, e) {
+  e.stopPropagation();
+  state.openDayTasks[dayNum] = !state.openDayTasks[dayNum];
+  saveState();
+  const el = document.getElementById(`dtasks-${dayNum}`);
+  const toggle = el && el.previousElementSibling;
+  if (el) el.classList.toggle('open', !!state.openDayTasks[dayNum]);
+  if (toggle) toggle.textContent = state.openDayTasks[dayNum] ? '▾ Hide tasks' : '▸ Show tasks';
+}
+
+function rerenderPhaseBadge(dayNum) {
+  for (const phase of PHASES) {
+    const hasDayInPhase = phase.days.some(d => d.d === dayNum);
+    if (hasDayInPhase) {
+      const doneCount = phase.days.filter(d => !!state.days[d.d]).length;
+      const el = document.getElementById(phase.id);
+      if (el) {
+        const badge = el.querySelector('.phase-badge');
+        if (badge) badge.textContent = `${doneCount}/${phase.days.length}`;
+        const bar = el.querySelector('.phase-progress-fill');
+        if (bar) bar.style.width = Math.round(doneCount/phase.days.length*100) + '%';
+      }
+      break;
+    }
+  }
+}
+
+function rerenderDayMeta(dayNum) {
+  for (const phase of PHASES) {
+    const day = phase.days.find(d => d.d === dayNum);
+    if (day) {
+      const doneTasks = day.tasks.filter((_,i) => !!state.tasks[`${dayNum}-${i}`]).length;
+      const metaEl = document.getElementById(`day-item-${dayNum}`)?.querySelector('.day-meta');
+      if (metaEl) {
+        const existing = metaEl.querySelectorAll('.tag-time');
+        existing.forEach(el => { if(el.textContent.includes('tasks')) el.remove(); });
+        if (doneTasks > 0) {
+          const span = document.createElement('span');
+          span.className = 'tag tag-time';
+          span.textContent = `${doneTasks}/${day.tasks.length} tasks`;
+          metaEl.appendChild(span);
+        }
+      }
+      break;
+    }
+  }
+}
+
+function toggleDark() {
+  state.dark = !state.dark;
+  saveState();
+  applyTheme();
+}
+
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', state.dark ? 'dark' : 'light');
+  const btn = document.getElementById('darkBtn');
+  if (btn) btn.textContent = state.dark ? '☀️ Light' : '🌙 Dark';
+}
+
+function confirmReset() {
+  if (confirm('Reset ALL progress? This cannot be undone.')) {
+    localStorage.removeItem('crm45_v2');
+    state = { dark: state.dark, days:{}, tasks:{}, certs:{}, openPhases:{'phase-certs':false}, openDayTasks:{} };
+    saveState();
+    renderCerts();
+    renderPhases();
+    updateStats();
+  }
+}
+
+loadState();
+applyTheme();
+renderCerts();
+renderPhases();
+updateStats();
+Object.keys(state.openPhases).forEach(id => {
+  if (state.openPhases[id]) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('open');
+  }
+});
+</script>
+</body>
+</html>
